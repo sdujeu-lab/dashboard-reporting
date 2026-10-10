@@ -1,0 +1,25 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+async function sign(pwd: string) {
+  const data = new TextEncoder().encode('lfdw-reporting:' + pwd)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+export async function proxy(req: NextRequest) {
+  const pwd = process.env.ADMIN_PASSWORD
+  if (!pwd) return new NextResponse('ADMIN_PASSWORD non configuré', { status: 500 })
+  if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname.startsWith('/api/cron')) return NextResponse.next()
+  const token = req.cookies.get('rpt_auth')?.value
+  if (token && token === (await sign(pwd))) return NextResponse.next()
+  const url = req.nextUrl.clone()
+  url.pathname = '/login'
+  url.search = ''
+  return NextResponse.redirect(url)
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+}
