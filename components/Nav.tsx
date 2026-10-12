@@ -6,7 +6,11 @@ const links = [
   { href: '/', label: 'Tableau de bord' },
   { href: '/mots-cles', label: 'Mots-clés (GSC)' },
   { href: '/rang', label: 'Rang réel' },
+  { href: '/comparer', label: 'Comparer' },
+  { href: '/indexation', label: 'Indexation' },
+  { href: '/ia', label: 'Visibilité IA' },
   { href: '/mesurer', label: 'Mesurer les rangs' },
+  { href: '/import', label: 'Import CSV' },
   { href: '/gerer', label: 'Gérer les mots-clés' },
   { href: '/clients', label: 'Clients' },
 ]

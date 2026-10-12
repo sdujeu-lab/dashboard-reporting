@@ -1,5 +1,6 @@
 import PrintButton from "../components/PrintButton";
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 import {
   getSites, getMonths, getSummary, getTrend, getQueries, getPages,
   getCountries, getChannels, shiftMonth, pct, brandSplit, movers,
@@ -109,6 +110,39 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const chTotal = channels.reduce((a: number, c: any) => a + c.sessions, 0) || 1;
   const cTotal = countries.reduce((a: number, c: any) => a + c.clicks, 0) || 1;
   const yoyLabel = label(ym);
+  const { data: kwR } = await supabase.from('rpt_keywords').select('id, keyword').eq('site_id', site.id).limit(10000)
+  const kwMap = new Map((kwR || []).map((k: any) => [String(k.id), k.keyword as string] as [string, string]))
+  const kIds = [...kwMap.keys()]
+  const rk: any[] = []
+  for (let i = 0; i < kIds.length; i += 100) {
+    const { data } = await supabase.from('rpt_keyword_rank').select('keyword_id, month, rank, url').in('keyword_id', kIds.slice(i, i + 100))
+    rk.push(...(data || []))
+  }
+  const rkMonths = [...new Set(rk.map((r) => String(r.month).slice(0, 7)))].sort()
+  const rkCur = rkMonths[rkMonths.length - 1]
+  const rkPrev = rkMonths[rkMonths.length - 2]
+  const rkBy = new Map<string, any>()
+  for (const r of rk) rkBy.set(`${r.keyword_id}|${String(r.month).slice(0, 7)}`, r)
+  const rkRows = rkCur ? kIds.map((id) => ({ kw: kwMap.get(id) as string, c: rkBy.get(`${id}|${rkCur}`), p: rkPrev ? rkBy.get(`${id}|${rkPrev}`) : null })).filter((x) => x.c) : []
+  rkRows.sort((a, b) => (a.c.rank ?? 999) - (b.c.rank ?? 999))
+  const n3 = rkRows.filter((x) => x.c.rank !== null && x.c.rank <= 3).length
+  const n10 = rkRows.filter((x) => x.c.rank !== null && x.c.rank <= 10).length
+  const { data: ix } = await supabase.from('rpt_index_monthly').select('month, total_sitemap, indexed_sitemap').eq('site_id', site.id).order('month', { ascending: false }).limit(2)
+  const ixCur: any = ix?.[0]
+  const ixPrev: any = ix?.[1]
+  const aiR: any[] = []
+  for (let i = 0; i < kIds.length; i += 100) {
+    const { data } = await supabase.from('rpt_keyword_ai').select('keyword_id, month, has_ai, cited, sources').in('keyword_id', kIds.slice(i, i + 100))
+    aiR.push(...(data || []))
+  }
+  const aiMonths = [...new Set(aiR.map((r) => String(r.month).slice(0, 7)))].sort()
+  const aiCur = aiMonths[aiMonths.length - 1]
+  const aiCurRows = aiR.filter((r) => String(r.month).slice(0, 7) === aiCur)
+  const aiHas = aiCurRows.filter((r) => r.has_ai).length
+  const aiCited = aiCurRows.filter((r) => r.cited).length
+  const srcCount = new Map<string, number>()
+  for (const r of aiCurRows) for (const h of r.sources || []) srcCount.set(h, (srcCount.get(h) || 0) + 1)
+  const topSrc = [...srcCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
 
   return (
     <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
@@ -143,6 +177,67 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             vsPrev={prev ? cur.position - prev.position : null} vsYoy={yoy ? cur.position - yoy.position : null} />
         </section>
 
+        <section className="grid gap-6 lg:grid-cols-3">
+          <div className="rounded-2xl bg-white p-5 shadow-sm lg:col-span-2">
+            <h2 className="mb-3 flex items-baseline justify-between font-semibold">
+              <span>Rang réel Google <span className="text-xs font-normal text-slate-400">{rkCur ? `mesuré en ${label(rkCur)}` : ''}</span></span>
+              <Link href={`/rang?d=${site.domain}`} className="text-xs font-normal text-blue-700 print:hidden">Voir tout →</Link>
+            </h2>
+            {rkRows.length ? (<>
+              <p className="mb-2 text-xs text-slate-500">{rkRows.length} mots-clés suivis · {n3} dans le top 3 · {n10} dans le top 10</p>
+              <ul className="divide-y">
+                {rkRows.slice(0, 10).map((x) => {
+                  const diff = x.p && x.p.rank !== null && x.c.rank !== null ? x.p.rank - x.c.rank : 0;
+                  return (
+                    <li key={x.kw} className="flex items-center justify-between gap-4 py-2 text-sm">
+                      <span className="truncate">{x.kw}</span>
+                      <span className="flex shrink-0 items-center gap-3">
+                        {diff !== 0 && <span className={diff > 0 ? 'text-emerald-600' : 'text-red-600'}>{diff > 0 ? '▲' : '▼'} {Math.abs(diff)}</span>}
+                        <span className="w-14 text-right font-medium">{x.c.rank === null ? '> 50' : `#${x.c.rank}`}</span>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>) : <p className="py-4 text-sm text-slate-400">Aucun rang mesuré pour l'instant.</p>}
+          </div>
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <h2 className="mb-3 flex items-baseline justify-between font-semibold">
+              <span>Indexation Google</span>
+              <Link href={`/indexation?d=${site.domain}&vue=client`} className="text-xs font-normal text-blue-700 print:hidden">Détail →</Link>
+            </h2>
+            {ixCur && ixCur.total_sitemap ? (
+              <div>
+                <div className="text-3xl font-semibold">{ixCur.indexed_sitemap} <span className="text-base font-normal text-slate-500">/ {ixCur.total_sitemap} pages</span></div>
+                <div className="mt-2 h-2 rounded bg-slate-100"><div className="h-2 rounded bg-emerald-500" style={{ width: `${(ixCur.indexed_sitemap / ixCur.total_sitemap) * 100}%` }} /></div>
+                <p className="mt-2 text-sm text-slate-500">{((ixCur.indexed_sitemap / ixCur.total_sitemap) * 100).toFixed(0)} % des pages du sitemap sont indexées</p>
+                {ixPrev && ixPrev.total_sitemap ? <p className="mt-1 text-xs text-slate-400">Mois précédent : {ixPrev.indexed_sitemap} / {ixPrev.total_sitemap}</p> : null}
+                <p className="mt-1 text-xs text-slate-400">Contrôlé en {label(String(ixCur.month).slice(0, 7))}</p>
+              </div>
+            ) : <p className="py-4 text-sm text-slate-400">Contrôle d'indexation pas encore lancé.</p>}
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="mb-3 font-semibold">Visibilité dans les réponses IA de Google <span className="text-xs font-normal text-slate-400">{aiCur ? `AI Overviews · mesuré en ${label(aiCur)}` : ''}</span></h2>
+          {aiCurRows.length ? (
+            <div className="grid gap-6 sm:grid-cols-3">
+              <div>
+                <div className="text-3xl font-semibold">{aiHas} <span className="text-base font-normal text-slate-500">/ {aiCurRows.length}</span></div>
+                <p className="mt-1 text-sm text-slate-500">mots-clés avec un AI Overview</p>
+              </div>
+              <div>
+                <div className="text-3xl font-semibold text-emerald-600">{aiCited} <span className="text-base font-normal text-slate-500">/ {aiHas}</span></div>
+                <p className="mt-1 text-sm text-slate-500">où votre site est cité comme source</p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-medium">Sites les plus cités</p>
+                <ul className="space-y-1 text-sm text-slate-600">{topSrc.map(([h, n]) => <li key={h} className="flex justify-between"><span className="truncate">{h}</span><span>{n}×</span></li>)}</ul>
+              </div>
+            </div>
+          ) : <p className="py-4 text-sm text-slate-400">Pas encore de mesure des AI Overviews. Elle se fait avec la mesure du rang réel.</p>}
+        </section>
+
         <section className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
             <h2 className="mb-3 font-semibold">Votre contenu <span className="text-xs font-normal text-slate-400">clics · écart vs {label(pm)}</span></h2>
@@ -164,7 +259,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <ul className="space-y-2 text-sm">
               {countries.slice(0, 5).map((c: any) => (
                 <li key={c.country}>
-                  <div className="flex justify-between"><span>{country(c.country)}</span><span>{((c.clicks / cTotal) * 100).toFixed(0)} %</span></div>
+                  <div className="flex justify-between"><span>{A3[c.country.toLowerCase()] ? country(c.country) : c.country}</span><span>{((c.clicks / cTotal) * 100).toFixed(0)} %</span></div>
                   <div className="h-1.5 rounded bg-slate-100"><div className="h-1.5 rounded bg-blue-600" style={{ width: `${(c.clicks / cTotal) * 100}%` }} /></div>
                 </li>
               ))}

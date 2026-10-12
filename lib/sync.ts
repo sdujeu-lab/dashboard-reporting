@@ -101,6 +101,7 @@ async function setStatus(siteId: string, status: string, message: string, done =
 async function run(siteId: string, n: number) {
   const { data: site } = await supabase.from('rpt_sites').select('*').eq('id', siteId).single();
   if (!site) return;
+  if (site.manual_import) { await setStatus(site.id, 'ok', 'Import manuel (pas de synchro automatique)', true); return; }
 
   const now = new Date();
   const months: string[] = [];
