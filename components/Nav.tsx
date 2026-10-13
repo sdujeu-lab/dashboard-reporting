@@ -9,6 +9,8 @@ const links = [
   { href: '/comparer', label: 'Comparer' },
   { href: '/indexation', label: 'Indexation' },
   { href: '/ia', label: 'Visibilité IA' },
+  { href: '/liens', label: 'Liens' },
+  { href: '/analytics', label: 'Analytics' },
   { href: '/mesurer', label: 'Mesurer les rangs' },
   { href: '/import', label: 'Import CSV' },
   { href: '/gerer', label: 'Gérer les mots-clés' },

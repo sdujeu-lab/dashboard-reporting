@@ -51,6 +51,16 @@ export const pct = (cur: number, prev?: number | null) =>
 export const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
+export function brandTermsOf(site: any): string[] {
+  const own = (site?.brand_terms || []).map((t: string) => norm(String(t))).filter(Boolean);
+  if (own.length) return own;
+  const parts = String(site?.domain || '').replace(/^www\./, '').split('.');
+  const root = norm(parts.length > 1 ? parts[parts.length - 2] : parts[0]);
+  const name = norm(String(site?.client_name || ''));
+  const set = new Set<string>([name, name.replace(/\s+/g, ''), root, root.replace(/-/g, ''), root.replace(/-/g, ' ')]);
+  return [...set].filter((t) => t.length >= 3);
+}
+
 export function brandSplit(queries: any[], terms: string[]) {
   const t = terms.map(norm);
   let brand = 0, other = 0;

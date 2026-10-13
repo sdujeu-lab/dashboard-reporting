@@ -1,6 +1,6 @@
 import { getSites } from '../../lib/data'
 import { getRankStatus } from '../../lib/rank'
-import { launchRank } from './actions'
+import { launchRank, syncGsc } from './actions'
 import { saveManualRank } from './manual'
 import { setCity } from './city'
 import RankRefresh from './RankRefresh'
@@ -25,11 +25,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
     errRows.push(...(data || []))
   }
   const nErr = errRows.length
-  const { data: stCity } = await supabase.from('rpt_sites').select('rank_location').eq('id', site.id).maybeSingle()
+  const { data: stCity } = await supabase.from('rpt_sites').select('rank_location, sync_status, sync_message').eq('id', site.id).maybeSingle()
   const city: string = (stCity as any)?.rank_location || 'Marseille (par défaut)'
-  const scopes = (nErr > 0 ? ['errors', 'priority', 'all'] : ['priority', 'all']) as ('errors' | 'priority' | 'all')[]
+  const sy: any = stCity
+  const scopes = (nErr > 0 ? ['errors', 'priority'] : ['priority']) as ('errors' | 'priority')[]
   const suffix = nErr > 0 ? ' (erreurs en premier)' : ''
-  const label = (s: string) => s === 'errors' ? 'Relancer seulement les ' + nErr + ' erreur(s)' : s === 'priority' ? 'Mesurer les mots-clés prioritaires' + suffix : 'Mesurer tous les mots-clés' + suffix
+  const label = (s: string) => s === 'errors' ? 'Relancer seulement les ' + nErr + ' erreur(s)' : s === 'priority' ? 'Mesurer les mots-clés en rang réel' + suffix : 'Mesurer tous les mots-clés' + suffix
 
   return (
     <main className="mx-auto max-w-3xl p-6">
@@ -51,7 +52,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
       </form>
       {sp.e && <p className="mt-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">{sp.e}</p>}
       {sp.ok && <p className="mt-2 rounded-lg bg-green-50 p-3 text-sm text-green-700">✓ Recherche désormais depuis : {sp.ok}</p>}
-      {st?.running && <RankRefresh />}
+      {(st?.running || sy?.sync_status === 'running') && <RankRefresh />}
       {st && (
         <div className="mt-6 rounded-lg border bg-white p-4 text-sm">
           <p>{st.msg}</p>
@@ -86,6 +87,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             </button>
           </form>
         ))}
+      </div>
+      <div className="mt-6 rounded-lg border bg-white p-4 text-sm">
+        <p className="mb-2 text-gray-600">Les mots-clés hors rang réel prennent leur position dans Search Console (gratuit, sans DataForSEO).</p>
+        {sy?.sync_message && <p className="mb-2 text-xs text-gray-500">{sy.sync_status === 'running' ? '⏳ ' : sy.sync_status === 'error' ? '✗ ' : '✓ '}{sy.sync_message}</p>}
+        <div className="flex flex-wrap gap-2">
+          <form action={syncGsc.bind(null, site.id, site.domain, 1)}><button className="rounded-lg bg-gray-900 px-4 py-2 text-white">Mettre à jour les positions GSC (dernier mois)</button></form>
+          <form action={syncGsc.bind(null, site.id, site.domain, 16)}><button className={sel}>Recalculer sur 16 mois</button></form>
+        </div>
       </div>
       <p className="mt-4 text-xs text-gray-500">Chaque mot-clé est mesuré {Math.min(3, Math.max(1, Number(process.env.RANK_RUNS) || 2))} fois, depuis {city.split(',')[0]}, pour environ {(Math.min(3, Math.max(1, Number(process.env.RANK_RUNS) || 2)) * 0.01).toFixed(2).replace('.', ',')} $ par mot-clé.</p>
     </main>

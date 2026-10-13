@@ -62,6 +62,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <Link href={`/?d=${site.domain}`} className="text-blue-700">← Tableau de bord</Link>
           </div>
         </header>
+        <form className="flex gap-2 text-sm print:hidden">
+          <select key={site.domain} name="d" defaultValue={site.domain} className="rounded-lg border bg-white px-3 py-1.5">
+            {sites.map((s: any) => <option key={s.id} value={s.domain}>{s.client_name}</option>)}
+          </select>
+          <button className="rounded-lg border bg-white px-3 py-1.5">Changer de client</button>
+        </form>
         {rows.some((r: any) => r.err) && (
           <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700 print:hidden">
             ⚠ {rows.filter((r: any) => r.err).length} mot(s)-clé(s) en erreur de mesure ce mois-ci : {rows.filter((r: any) => r.err).map((r: any) => r.k.keyword).join(', ')}. Relance « Mesurer » : ils seront repris en premier.
@@ -127,9 +133,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
               ))}
             </tbody>
           </table>
-          {!rows.length && <p className="p-6 text-sm text-slate-400">Aucun rang mesuré. Lance d'abord rank-check.js.</p>}
+          {!rows.length && <p className="p-6 text-sm text-slate-400">Aucun rang mesuré. Va dans « Mesurer les rangs » pour lancer une mesure.</p>}
         </div>
-        <p className="text-xs text-slate-400">Rang mesuré dans les résultats Google (top 50, médiane de 3 mesures) · ▲ = gain de places · &gt; 50 = hors des 50 premiers résultats.</p>
+        <p className="text-xs text-slate-400">Rang mesuré dans les résultats Google (top 50, {Math.min(3, Math.max(1, Number(process.env.RANK_RUNS) || 2))} mesure(s) par mot-clé) · ▲ = gain de places · &gt; 50 = hors des 50 premiers résultats.</p>
       </div>
     </main>
   );

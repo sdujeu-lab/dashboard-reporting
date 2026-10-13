@@ -41,7 +41,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <h1 className="text-2xl font-semibold">Gérer les mots-clés · {site.client_name}</h1>
             <p className="text-sm text-slate-500">
               {kws.length} mots-clés suivis dans la GSC · {prioCount} mesurés en rang réel Google
-              (≈ {(prioCount * 3 * 0.01).toFixed(2).replace('.', ',')} $ par mesure mensuelle)
+              (≈ {(prioCount * Math.min(3, Math.max(1, Number(process.env.RANK_RUNS) || 2)) * 0.01).toFixed(2).replace('.', ',')} $ par mesure mensuelle)
             </p>
           </div>
           <div className="flex gap-4 text-sm">
@@ -50,6 +50,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             <Link href={`/?d=${site.domain}`} className="text-blue-700">← Tableau de bord</Link>
           </div>
         </header>
+        <form className="flex gap-2 text-sm">
+          <select key={site.domain} name="d" defaultValue={site.domain} className="rounded-lg border bg-white px-3 py-1.5">
+            {sites.map((s: any) => <option key={s.id} value={s.domain}>{s.client_name}</option>)}
+          </select>
+          <button className="rounded-lg border bg-white px-3 py-1.5">Changer de client</button>
+        </form>
 
         <section className="rounded-2xl bg-white p-5 shadow-sm">
           <h2 className="mb-3 font-semibold">Ajouter des mots-clés</h2>

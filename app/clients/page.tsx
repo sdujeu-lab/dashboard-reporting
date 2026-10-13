@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getSites } from '@/lib/data';
-import { addClient, syncNow, deleteClient } from './actions';
+import { addClient, syncNow, deleteClient, saveBrand, saveGa4 } from './actions';
 import DeleteClientButton from './DeleteClientButton';
 import AutoRefresh from './AutoRefresh';
 
@@ -64,6 +64,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ a
                   </div>
                 </div>
                 <div className="text-xs"><Status s={s} /></div>
+                <form action={saveBrand.bind(null, s.id)} className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-slate-500">Termes de marque :</span>
+                  <input name="brand" defaultValue={(s.brand_terms || []).join(', ')} placeholder="vide = nom du client et domaine" className="min-w-[16rem] flex-1 rounded-lg border px-2 py-1" />
+                  <button className="rounded-lg border px-3 py-1">Enregistrer</button>
+                </form>
+                <form action={saveGa4.bind(null, s.id)} className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-slate-500">ID propriété GA4 :</span>
+                  <input name="ga4" defaultValue={s.ga4_property_id || ''} placeholder="ex. 535901583 (vide = pas de GA4)" className="min-w-[16rem] flex-1 rounded-lg border px-2 py-1" />
+                  <button className="rounded-lg border px-3 py-1">Enregistrer</button>
+                </form>
                 <div className="flex gap-4 text-blue-700">
                   <Link href={`/?d=${s.domain}`}>Tableau de bord</Link>
                   <Link href={`/mots-cles?d=${s.domain}`}>Positions GSC</Link>

@@ -64,6 +64,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
           <Link href={`/?d=${site.domain}`} className="text-sm text-blue-700">← Tableau de bord</Link>
         </header>
 
+        <form className="flex gap-2 text-sm">
+          <select key={site.domain} name="d" defaultValue={site.domain} className="rounded-lg border bg-white px-3 py-1.5">
+            {sites.map((s: any) => <option key={s.id} value={s.domain}>{s.client_name}</option>)}
+          </select>
+          <button className="rounded-lg border bg-white px-3 py-1.5">Changer de client</button>
+        </form>
+
         <div className="flex flex-wrap gap-2 text-sm">
           <Link href={href({ c: '' })} className={`rounded-full border px-3 py-1 ${!cat ? 'bg-slate-900 text-white' : 'bg-white'}`}>Toutes</Link>
           {cats.map((c) => (

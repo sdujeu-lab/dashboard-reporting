@@ -46,7 +46,7 @@ async function serpRetry(keyword: string, domain: string, home: string = LOCATIO
   throw err
 }
 
-export function startRank(siteId: string, domain: string, scope: 'priority' | 'all' | 'errors') {
+export function startRank(siteId: string, domain: string, scope: 'priority' | 'all' | 'errors' | 'gsc') {
   const key = String(siteId)
   if (getRankStatus(key)?.running) return
   setSt(key, { running: true, done: 0, total: 0, msg: 'Démarrage…', cost: 0 })
@@ -59,7 +59,7 @@ export function startRank(siteId: string, domain: string, scope: 'priority' | 'a
       const { data: stRow } = await db.from('rpt_sites').select('rank_location').eq('id', siteId).maybeSingle()
       const home: string = (stRow as any)?.rank_location || LOCATION
       let q = db.from('rpt_keywords').select('id, keyword').eq('site_id', siteId).order('keyword')
-      if (scope === 'priority') q = q.eq('priority', true)
+      q = q.eq('priority', true)
       const { data: kws, error } = await q.range(0, 999)
       if (error) throw new Error(error.message)
       const month = new Date().toISOString().slice(0, 7) + '-01'

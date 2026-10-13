@@ -38,6 +38,30 @@ export async function syncNow(siteId: string, months: number, _fd: FormData) {
   redirect('/clients');
 }
 
+export async function saveBrand(siteId: string, formData: FormData) {
+  const brand = [...new Set(String(formData.get('brand') || '').split(/[\n,]/).map(norm).filter(Boolean))];
+  const { error } = await supabase.from('rpt_sites').update({ brand_terms: brand }).eq('id', siteId);
+  if (error) {
+    console.error('[clients] ERREUR SUPABASE :', error.message);
+    redirect('/clients?error=' + encodeURIComponent(error.message));
+  }
+  revalidatePath('/clients');
+  revalidatePath('/');
+  redirect('/clients');
+}
+
+export async function saveGa4(siteId: string, formData: FormData) {
+  const raw = String(formData.get('ga4') || '').replace(/properties\//i, '').replace(/\D/g, '');
+  const { error } = await supabase.from('rpt_sites').update({ ga4_property_id: raw || null }).eq('id', siteId);
+  if (error) {
+    console.error('[clients] ERREUR SUPABASE :', error.message);
+    redirect('/clients?error=' + encodeURIComponent(error.message));
+  }
+  revalidatePath('/clients');
+  revalidatePath('/');
+  redirect('/clients');
+}
+
 export async function deleteClient(siteId: string, _fd: FormData) {
   const { error } = await supabase.from('rpt_sites').delete().eq('id', siteId);
   if (error) {
