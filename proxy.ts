@@ -9,9 +9,20 @@ async function sign(pwd: string) {
 }
 
 export async function proxy(req: NextRequest) {
+  const path = req.nextUrl.pathname
+
+  // Pages clients : le jeton est vérifié dans la page elle-même
+  if (path.startsWith('/c/')) {
+    const res = NextResponse.next()
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    res.headers.set('Cache-Control', 'no-store')
+    res.headers.set('Referrer-Policy', 'no-referrer')
+    return res
+  }
+
   const pwd = process.env.ADMIN_PASSWORD
   if (!pwd) return new NextResponse('ADMIN_PASSWORD non configuré', { status: 500 })
-  if (req.nextUrl.pathname === '/login' || req.nextUrl.pathname.startsWith('/api/cron')) return NextResponse.next()
+  if (path === '/login' || path.startsWith('/api/cron')) return NextResponse.next()
   const token = req.cookies.get('rpt_auth')?.value
   if (token && token === (await sign(pwd))) return NextResponse.next()
   const url = req.nextUrl.clone()
