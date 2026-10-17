@@ -1,8 +1,134 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Jetons de la marque — thème clair (valeurs d'origine). */
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
+
+  --canvas: #FBF8F6;
+  --surface: #ffffff;
+  --ink: #1B1722;
+  --ink-2: #4B4352;
+  --muted: #6B6270;
+  --line: #EFE7E3;
+  --line2: #F1EBE8;
+  --line-strong: #DDD3D8;
+  --meter: #F4EEF1;
+  --accent: #D4007F;
+  --accent-bg: #D4007F;
+  --on-accent: #ffffff;
+  --focus: #4285F4;
+  --good: #0B6B3A;
+  --good-bg: #E3F6EA;
+  --bad: #B3261E;
+  --bad-bg: #FDE7E5;
+  --bad-strong: #7A1A14;
+  --flat: #5A5160;
+  --flat-bg: #F1EEF2;
+  --info: #1D4FC4;
+  --info-bg: #E6EEFF;
+  --warn: #7A5200;
+  --warn-bg: #FFF3D1;
+  --bucket-off: #CFC8D2;
+  --compare: #B9B1BD;
+}
+
+/* Thème sombre — dérivé de l'encre #1B1722 (prune), contrastes texte ≥ 4,5:1.
+   Limité à l'écran : l'impression et le PDF restent en clair. */
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --background: #141118;
+    --foreground: #F3EEF1;
+
+    --canvas: #141118;
+    --surface: #1E1A23;
+    --ink: #F3EEF1;
+    --ink-2: #CFC7D2;
+    --muted: #ADA3B2;
+    --line: #2E2833;
+    --line2: #29232E;
+    --line-strong: #4A4150;
+    --meter: #2B2530;
+    --accent: #FF5CAD;
+    --accent-bg: #D4007F;
+    --on-accent: #ffffff;
+    --focus: #7FA8FF;
+    --good: #6FDB9C;
+    --good-bg: #12301F;
+    --bad: #FF8F86;
+    --bad-bg: #3A1715;
+    --bad-strong: #FFB4AC;
+    --flat: #C3BAC7;
+    --flat-bg: #2B2530;
+    --info: #97B6FF;
+    --info-bg: #172447;
+    --warn: #F2C55C;
+    --warn-bg: #352808;
+    --bucket-off: #5A5160;
+    --compare: #7E7484;
+
+    /* Palette Tailwind réaffectée : les classes existantes (bg-white,
+       text-gray-600, bg-red-50…) basculent sans ajouter de dark: partout. */
+    --color-white: #1E1A23;
+    --color-black: #F3EEF1;
+    --color-gray-50: #221D27;
+    --color-gray-100: #2B2530;
+    --color-gray-200: #3A3240;
+    --color-gray-300: #4A4150;
+    --color-gray-400: #968C9C;
+    --color-gray-500: #ADA3B2;
+    --color-gray-600: #BFB6C3;
+    --color-gray-700: #D0C8D3;
+    --color-gray-800: #E2DBE4;
+    --color-gray-900: #F3EEF1;
+    --color-gray-950: #FBF8F6;
+    --color-slate-50: #221D27;
+    --color-slate-100: #2B2530;
+    --color-slate-200: #3A3240;
+    --color-slate-300: #4A4150;
+    --color-slate-400: #968C9C;
+    --color-slate-500: #ADA3B2;
+    --color-slate-600: #BFB6C3;
+    --color-slate-700: #D0C8D3;
+    --color-slate-800: #E2DBE4;
+    --color-slate-900: #F3EEF1;
+    --color-slate-950: #FBF8F6;
+    --color-red-50: #3A1715;
+    --color-red-200: #6B2A26;
+    --color-red-600: #FF8F86;
+    --color-red-700: #FFA39B;
+    --color-red-800: #FFB4AC;
+    --color-green-50: #12301F;
+    --color-green-600: #6FDB9C;
+    --color-green-700: #85E3AC;
+    --color-green-800: #9BE8BC;
+    --color-emerald-50: #10301F;
+    --color-emerald-200: #1F5A3C;
+    --color-emerald-600: #6FDB9C;
+    --color-emerald-900: #B5F0CD;
+    --color-amber-50: #352808;
+    --color-amber-600: #F2C55C;
+    --color-amber-700: #F5CF72;
+    --color-amber-900: #FBE3A6;
+    --color-blue-50: #172447;
+    --color-blue-600: #7FA8FF;
+    --color-blue-700: #97B6FF;
+    --color-indigo-500: #8B8CF8;
+  }
+
+  /* Les bordures sans couleur explicite (classe `border` seule) suivent
+     currentColor : en sombre on les adoucit. Les utilitaires restent prioritaires. */
+  @layer base {
+    [data-theme="dark"] *,
+    [data-theme="dark"] ::before,
+    [data-theme="dark"] ::after {
+      border-color: var(--line-strong);
+    }
+  }
 }
 
 @theme inline {
@@ -10,13 +136,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

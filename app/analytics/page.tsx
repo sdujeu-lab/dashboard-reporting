@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Young+Serif&display=swap');
-.an{--accent:#D4007F;--ink:#1B1722;--muted:#6B6270;--line:#EFE7E3;--line2:#F1EBE8;min-height:100vh;background:#FBF8F6;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45;padding:28px 32px 48px;box-sizing:border-box}
+.an{min-height:100vh;background:var(--canvas);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45;padding:28px 32px 48px;box-sizing:border-box}
 .an *{box-sizing:border-box}
 .an a{color:inherit}
 .an-wrap{max-width:1216px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
@@ -15,26 +15,26 @@ const CSS = `
 .an h2{font-size:22px}
 .an-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .an-logo{height:72px;width:auto;display:block}
-.an-select,.an-date{height:44px;padding:0 12px;border:1px solid #DDD3D8;border-radius:10px;background:#fff;color:var(--ink);font:500 15px 'DM Sans',system-ui,sans-serif}
-.an-btn{height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:700 15px 'DM Sans',system-ui,sans-serif;cursor:pointer}
+.an-select,.an-date{height:44px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);color:var(--ink);font:500 15px 'DM Sans',system-ui,sans-serif}
+.an-btn{height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--accent-bg);color:var(--on-accent);font:700 15px 'DM Sans',system-ui,sans-serif;cursor:pointer}
 .an-bar{display:flex;height:5px;border-radius:3px;overflow:hidden}
 .an-bar div{flex:1}
 .an-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
 .an-sub{color:var(--muted);font-size:14px}
-.an-ctl{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.an-ctl{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
 .an-chips{display:flex;flex-wrap:wrap;gap:8px}
-.an-chip{padding:6px 14px;border:1px solid #DDD3D8;border-radius:999px;font-size:14px;text-decoration:none;background:#fff}
-.an-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.an-chip{padding:6px 14px;border:1px solid var(--line-strong);border-radius:999px;font-size:14px;text-decoration:none;background:var(--surface)}
+.an-chip.on{background:var(--accent-bg);border-color:var(--accent-bg);color:var(--on-accent)}
 .an-fields{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px}
 .an-fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
 .an-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:16px}
-.an-kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:6px}
+.an-kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:6px}
 .an-kpi-l{color:var(--muted);font-size:14px;font-weight:500}
 .an-kpi-v{font-family:'Young Serif',Georgia,serif;font-size:38px;line-height:1.1;font-variant-numeric:tabular-nums}
 .an-kpi-n{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted)}
 .chip{padding:2px 8px;border-radius:999px;font-weight:700;font-size:13px;white-space:nowrap}
-.chip-good{background:#E3F6EA;color:#0B6B3A}.chip-bad{background:#FDE7E5;color:#B3261E}.chip-flat{background:#F1EEF2;color:#5A5160}
-.an-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.chip-good{background:var(--good-bg);color:var(--good)}.chip-bad{background:var(--bad-bg);color:var(--bad)}.chip-flat{background:var(--flat-bg);color:var(--flat)}
+.an-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
 .an-card-t{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .an-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(480px,100%),1fr));gap:16px}
 .an-table{width:100%;border-collapse:collapse;font-size:14px}
@@ -42,12 +42,12 @@ const CSS = `
 .an-table td{padding:7px 0;border-top:1px solid var(--line2)}
 .an-table .n{text-align:right;font-variant-numeric:tabular-nums;padding-left:10px}
 .an-table .p{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:12px}
-.an-empty{display:flex;align-items:center;justify-content:center;text-align:center;min-height:90px;border:1px dashed #DDD3D8;border-radius:12px;padding:16px;color:var(--muted);font-size:14px}
-.an-err{background:#FDE7E5;color:#7A1A14;border-radius:12px;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+.an-empty{display:flex;align-items:center;justify-content:center;text-align:center;min-height:90px;border:1px dashed var(--line-strong);border-radius:12px;padding:16px;color:var(--muted);font-size:14px}
+.an-err{background:var(--bad-bg);color:var(--bad-strong);border-radius:12px;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:6px}
 .an-legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:13px;color:var(--muted)}
 .an-legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
 .an-note{margin:0;font-size:13px;color:var(--muted)}
-@media print{.an{padding:0;background:#fff}.an-ctl,.an-top form{display:none}.an *{-webkit-print-color-adjust:exact;print-color-adjust:exact}.an-card,.an-kpi{break-inside:avoid}}
+@media print{.an{padding:0;background:var(--surface)}.an-ctl,.an-top form{display:none}.an *{-webkit-print-color-adjust:exact;print-color-adjust:exact}.an-card,.an-kpi{break-inside:avoid}}
 `
 
 const iso = (d: Date) => d.toISOString().slice(0, 10)
@@ -279,12 +279,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
           {dailyCur.length > 1 ? (
             <>
               <svg viewBox={'0 0 ' + W + ' ' + H} preserveAspectRatio="none" role="img" aria-label="Sessions par jour" style={{ width: '100%', height: 150 }}>
-                {dailyCmp.length > 1 && <polyline points={line(dailyCmp)} fill="none" stroke="#B9B1BD" strokeWidth="2" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
-                <polyline points={line(dailyCur)} fill="none" stroke="#D4007F" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                {dailyCmp.length > 1 && <polyline points={line(dailyCmp)} fill="none" style={{ stroke: 'var(--compare)' }} strokeWidth="2" strokeDasharray="5 4" vectorEffect="non-scaling-stroke" />}
+                <polyline points={line(dailyCur)} fill="none" style={{ stroke: 'var(--accent)' }} strokeWidth="2" vectorEffect="non-scaling-stroke" />
               </svg>
               <div className="an-legend">
-                <span><i style={{ borderColor: '#D4007F' }} />{fd(from)} → {fd(to)}</span>
-                {cmp && dailyCmp.length > 1 && <span><i style={{ borderColor: '#B9B1BD', borderTopStyle: 'dashed' }} />{fd(cmp.from)} → {fd(cmp.to)}</span>}
+                <span><i style={{ borderColor: 'var(--accent)' }} />{fd(from)} → {fd(to)}</span>
+                {cmp && dailyCmp.length > 1 && <span><i style={{ borderColor: 'var(--compare)', borderTopStyle: 'dashed' }} />{fd(cmp.from)} → {fd(cmp.to)}</span>}
                 <span style={{ marginLeft: 'auto' }}>{dk(dailyCur[0].k)} → {dk(dailyCur[dailyCur.length - 1].k)}</span>
               </div>
             </>

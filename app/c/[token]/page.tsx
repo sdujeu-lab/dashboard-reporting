@@ -13,6 +13,7 @@ import {
   brandSplit,
   brandTermsOf,
 } from '../../../lib/data'
+import ThemeToggle from '../../../components/ThemeToggle'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
@@ -96,7 +97,10 @@ export default async function ClientReportPage({
   if (!month) {
     return (
       <main className="mx-auto max-w-4xl space-y-4 p-6">
-        <h1 className="text-2xl font-bold text-slate-900">{client.name}</h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-2xl font-bold text-slate-900">{client.name}</h1>
+          <ThemeToggle />
+        </div>
         <p className="text-slate-600">
           Les premières données arriveront bientôt.
         </p>
@@ -154,6 +158,7 @@ export default async function ClientReportPage({
           >
             Afficher
           </button>
+          <ThemeToggle />
         </form>
       </div>
 

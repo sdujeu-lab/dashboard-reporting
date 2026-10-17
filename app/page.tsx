@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Young+Serif&display=swap');
-.db{--accent:#D4007F;--ink:#1B1722;--muted:#6B6270;--line:#EFE7E3;--line2:#F1EBE8;min-height:100vh;background:#FBF8F6;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45;padding:28px 32px 48px;box-sizing:border-box}
+.db{min-height:100vh;background:var(--canvas);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45;padding:28px 32px 48px;box-sizing:border-box}
 .db *{box-sizing:border-box}
 .db a{color:inherit}
 .db-wrap{max-width:1216px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
@@ -23,40 +23,40 @@ const CSS = `
 .db-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
 .db-logo{height:72px;width:auto;display:block}
 .db-form{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.db-select{height:44px;padding:0 36px 0 14px;border:1px solid #DDD3D8;border-radius:10px;background:#fff;color:var(--ink);font:500 15px 'DM Sans',system-ui,sans-serif}
-.db-btn{height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:700 15px 'DM Sans',system-ui,sans-serif;cursor:pointer}
-.db select:focus-visible,.db button:focus-visible,.db a:focus-visible{outline:3px solid #4285F4;outline-offset:2px}
+.db-select{height:44px;padding:0 36px 0 14px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);color:var(--ink);font:500 15px 'DM Sans',system-ui,sans-serif}
+.db-btn{height:44px;padding:0 22px;border:0;border-radius:10px;background:var(--accent-bg);color:var(--on-accent);font:700 15px 'DM Sans',system-ui,sans-serif;cursor:pointer}
+.db select:focus-visible,.db button:focus-visible,.db a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .db-bar{display:flex;height:5px;border-radius:3px;overflow:hidden}
 .db-bar div{flex:1}
 .db-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px}
 .db-sub{color:var(--muted);font-size:14px}
 .db-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:16px}
-.db-kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:6px}
+.db-kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:6px}
 .db-kpi-l{color:var(--muted);font-size:14px;font-weight:500}
 .db-kpi-v{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;font-family:'Young Serif',Georgia,serif;font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums}
 .db-kpi-n{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);margin-top:4px}
 .db-kpi-n div{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
 .chip{padding:2px 8px;border-radius:999px;font-weight:700}
-.chip-good{background:#E3F6EA;color:#0B6B3A}
-.chip-bad{background:#FDE7E5;color:#B3261E}
-.chip-flat{background:#F1EEF2;color:#5A5160}
-.db-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.chip-good{background:var(--good-bg);color:var(--good)}
+.chip-bad{background:var(--bad-bg);color:var(--bad)}
+.chip-flat{background:var(--flat-bg);color:var(--flat)}
+.db-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
 .db-card-t{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 .db-card-t a{margin-left:auto;font-size:13px;color:var(--accent);text-decoration:none}
 .db-dist{display:flex;gap:3px;height:14px}
 .db-dist>div{border-radius:4px}
-.db-legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:#4B4352}
+.db-legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--ink-2)}
 .db-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px}
 .db-kw{columns:2 340px;column-gap:48px}
 .db-kwrow{break-inside:avoid;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;border-bottom:1px solid var(--line2)}
 .db-kwrow>span:first-child{min-width:0}
 .db-kwrow .r{display:flex;align-items:center;gap:10px;flex:none}
 .db-badge{min-width:56px;text-align:center;padding:3px 10px;border-radius:8px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
-.b0{background:#E3F6EA;color:#0B6B3A}
-.b1{background:#E6EEFF;color:#1D4FC4}
-.b2{background:#FFF3D1;color:#7A5200}
-.b3{background:#F1EEF2;color:#5A5160}
-.pos{color:#0B6B3A}.neg{color:#B3261E}.nul{color:var(--muted)}
+.b0{background:var(--good-bg);color:var(--good)}
+.b1{background:var(--info-bg);color:var(--info)}
+.b2{background:var(--warn-bg);color:var(--warn)}
+.b3{background:var(--flat-bg);color:var(--flat)}
+.pos{color:var(--good)}.neg{color:var(--bad)}.nul{color:var(--muted)}
 .db-note{margin:0;font-size:13px;color:var(--muted)}
 .db-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(480px,100%),1fr));gap:16px}
 .db-grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:16px}
@@ -70,19 +70,19 @@ const CSS = `
 .db-row .k{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .db-row .d{min-width:36px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .db-row .c{width:44px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-.db-meter{height:8px;background:#F4EEF1;border-radius:4px;overflow:hidden}
+.db-meter{height:8px;background:var(--meter);border-radius:4px;overflow:hidden}
 .db-meter>div{height:100%;border-radius:4px}
 .db-line{display:flex;justify-content:space-between;gap:12px;font-size:14px}
-.db-empty{display:flex;align-items:center;justify-content:center;text-align:center;min-height:90px;border:1px dashed #DDD3D8;border-radius:12px;padding:16px;color:var(--muted);font-size:14px}
+.db-empty{display:flex;align-items:center;justify-content:center;text-align:center;min-height:90px;border:1px dashed var(--line-strong);border-radius:12px;padding:16px;color:var(--muted);font-size:14px}
 .db-table{width:100%;border-collapse:collapse;font-size:14px}
 .db-table th{text-align:left;font-size:13px;color:var(--muted);padding-bottom:6px;border-bottom:1px solid var(--line2)}
 .db-table td{padding:7px 0;border-top:1px solid var(--line2)}
 .db-table .n{text-align:right;font-variant-numeric:tabular-nums}
 .db-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;padding-top:8px;font-size:13px;color:var(--muted);text-align:center}
-.db section.rounded-2xl{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:none;padding:24px}
+.db section.rounded-2xl{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:none;padding:24px}
 .db section.rounded-2xl h2{font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:22px}
 .db-print{display:none}
-@media print{.db{padding:0;background:#fff}.db-form{display:none}.db *{-webkit-print-color-adjust:exact;print-color-adjust:exact}.db-screen{display:none}.db-print{display:block}.db-card,.db-kpi{break-inside:avoid}}
+@media print{.db{padding:0;background:var(--surface)}.db-form{display:none}.db *{-webkit-print-color-adjust:exact;print-color-adjust:exact}.db-screen{display:none}.db-print{display:block}.db-card,.db-kpi{break-inside:avoid}}
 `;
 
 const MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
@@ -99,7 +99,7 @@ const BUCKETS = [
   { label: 'Top 3', color: '#34A853' },
   { label: 'Places 4 à 10', color: '#4285F4' },
   { label: 'Places 11 à 50', color: '#FBBC05' },
-  { label: 'Hors top 50', color: '#CFC8D2' },
+  { label: 'Hors top 50', color: 'var(--bucket-off)' },
 ];
 
 function Delta({ value, invert = false, unit = '%' }: { value: number | null; invert?: boolean; unit?: string }) {
@@ -115,7 +115,7 @@ function Spark({ values, color }: { values: number[]; color: string }) {
   const w = 110, h = 32, max = Math.max(...values), min = Math.min(...values);
   const pts = values.map((v, i) =>
     `${(i / (values.length - 1)) * w},${h - 2 - ((v - min) / (max - min || 1)) * (h - 4)}`).join(' ');
-  return <svg width={w} height={h} aria-hidden="true"><polyline points={pts} fill="none" stroke={color} strokeWidth="2" /></svg>;
+  return <svg width={w} height={h} aria-hidden="true"><polyline points={pts} fill="none" style={{ stroke: color }} strokeWidth="2" /></svg>;
 }
 
 function Card(p: { title: string; value: string; vsPrev: number | null; vsYoy: number | null; invert?: boolean; unit?: string; values?: number[]; color?: string; yoyLabel: string }) {
@@ -124,7 +124,7 @@ function Card(p: { title: string; value: string; vsPrev: number | null; vsYoy: n
       <div className="db-kpi-l">{p.title}</div>
       <div className="db-kpi-v">
         <span>{p.value}</span>
-        {p.values && <Spark values={p.values} color={p.color || '#D4007F'} />}
+        {p.values && <Spark values={p.values} color={p.color || 'var(--accent)'} />}
       </div>
       <div className="db-kpi-n">
         <div><Delta value={p.vsPrev} invert={p.invert} unit={p.unit} /> vs mois précédent</div>
@@ -192,7 +192,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
         const rs = pick(all, k);
         return (
           <div key={k} style={{ marginBottom: 14, breakInside: 'avoid' }}>
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#D4007F', paddingBottom: 4 }}>{l}</div>
+            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--accent)', paddingBottom: 4 }}>{l}</div>
             {rs.length ? rs.map((r) => row(r, fn)) : <p className="db-sub">Rien à afficher.</p>}
           </div>
         );
@@ -300,7 +300,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             values={trend.map((t) => t.clicks)} color="#4285F4" />
           <Card title="Impressions" value={fmt(cur.impressions)} yoyLabel={yoyLabel}
             vsPrev={pct(cur.impressions, prev?.impressions)} vsYoy={pct(cur.impressions, yoy?.impressions)}
-            values={trend.map((t) => t.impressions)} color="#D4007F" />
+            values={trend.map((t) => t.impressions)} color="var(--accent)" />
           <Card title="CTR moyen" value={`${(cur.ctr * 100).toFixed(1).replace('.', ',')} %`} yoyLabel={yoyLabel}
             vsPrev={pct(cur.ctr, prev?.ctr)} vsYoy={pct(cur.ctr, yoy?.ctr)} />
           <Card title="Position moyenne" value={cur.position.toFixed(1).replace('.', ',')} yoyLabel={yoyLabel} invert unit="pos."
@@ -361,7 +361,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
                 <div className="db-sub">mots-clés avec un AI Overview</div>
               </div>
               <div>
-                <div className="db-big" style={{ color: aiCited ? '#0B6B3A' : '#B3261E' }}>{aiCited} <small>/ {aiHas}</small></div>
+                <div className="db-big" style={{ color: aiCited ? 'var(--good)' : 'var(--bad)' }}>{aiCited} <small>/ {aiHas}</small></div>
                 <div className="db-sub">où votre site est cité comme source</div>
               </div>
               <div>
