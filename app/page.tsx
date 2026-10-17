@@ -2,10 +2,10 @@ import PrintButton from "../components/PrintButton";
 import { LinksBlock } from '@/components/LinksBlock'
 import { AiImportBlock } from '@/components/AiImportBlock'
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import {
   getSites, getMonths, getSummary, getTrend, getQueries, getPages,
   getCountries, getChannels, shiftMonth, pct, brandSplit, brandTermsOf, movers,
+  getIndexSnapshot, getRankSnapshot, getAiSnapshot,
 } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -205,65 +205,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const chTotal = channels.reduce((a: number, c: any) => a + c.sessions, 0) || 1;
   const cTotal = countries.reduce((a: number, c: any) => a + c.clicks, 0) || 1;
   const yoyLabel = label(ym);
-  const { data: ix } = await supabase.from('rpt_index_monthly').select('month, total_sitemap, indexed_sitemap').eq('site_id', site.id).order('month', { ascending: false }).limit(1)
-  const ixCur: any = ix?.[0]
-  const { data: kwR } = await supabase.from('rpt_keywords').select('id, keyword').eq('site_id', site.id).limit(10000)
-  const kwMap = new Map((kwR || []).map((k: any) => [String(k.id), k.keyword as string] as [string, string]))
-  const kIds = [...kwMap.keys()]
-  const rk: any[] = []
-  for (let i = 0; i < kIds.length; i += 100) {
-    const { data } = await supabase.from('rpt_keyword_rank').select('keyword_id, month, rank, url').in('keyword_id', kIds.slice(i, i + 100))
-    rk.push(...(data || []))
-  }
-  const rkMonths = [...new Set(rk.map((r) => String(r.month).slice(0, 7)))].sort()
-  const rkCur = rkMonths[rkMonths.length - 1]
-  const rkPrev = rkMonths[rkMonths.length - 2]
-  const rkBy = new Map<string, any>()
-  for (const r of rk) rkBy.set(`${r.keyword_id}|${String(r.month).slice(0, 7)}`, r)
-  const rkRows = rkCur ? kIds.map((id) => ({ id, kw: kwMap.get(id) as string, c: rkBy.get(`${id}|${rkCur}`), p: rkPrev ? rkBy.get(`${id}|${rkPrev}`) : null })).filter((x) => x.c) : []
-  const gscK: any[] = []
-  for (let i = 0; i < kIds.length; i += 100) {
-    const { data } = await supabase.from('rpt_keyword_monthly').select('keyword_id, month, position').in('keyword_id', kIds.slice(i, i + 100))
-    gscK.push(...(data || []))
-  }
-  const gscKMonth = [...new Set(gscK.map((r) => String(r.month).slice(0, 7)))].sort().pop() || ''
-  const gscKBy = new Map<string, number>()
-  for (const r of gscK) if (String(r.month).slice(0, 7) === gscKMonth) gscKBy.set(String(r.keyword_id), r.position)
-  const gscKMonths = [...new Set(gscK.map((r) => String(r.month).slice(0, 7)))].sort()
-  const gscKPrev = gscKMonths[gscKMonths.length - 2] || ''
-  const gscKPrevBy = new Map<string, number>()
-  for (const r of gscK) if (gscKPrev && String(r.month).slice(0, 7) === gscKPrev) gscKPrevBy.set(String(r.keyword_id), r.position)
-  rkRows.sort((a, b) => (gscKBy.get(a.id) ?? a.c.rank ?? 999) - (gscKBy.get(b.id) ?? b.c.rank ?? 999))
-
-  // Une seule valeur par mot-clé : la position Search Console remplace le rang réel quand elle existe
-  const effRows = rkRows.map((x) => {
-    const g = gscKBy.get(x.id);
-    const gp = gscKPrevBy.get(x.id);
-    const diff = g !== undefined
-      ? (gp !== undefined ? Math.round((gp - g) * 10) / 10 : 0)
-      : (x.p && x.p.rank !== null && x.c.rank !== null ? x.p.rank - x.c.rank : 0);
-    const v: number | null = g !== undefined ? Math.round(g) : x.c.rank;
-    const bucket = v === null || v > 50 ? 3 : v <= 3 ? 0 : v <= 10 ? 1 : 2;
-    const text = g !== undefined ? g.toFixed(1).replace('.', ',') : x.c.rank === null ? '> 50' : '#' + x.c.rank;
-    return { kw: x.kw, diff, bucket, text };
-  });
-  const bk = [0, 0, 0, 0];
-  for (const r of effRows) bk[r.bucket]++;
-  const n3 = bk[0], n10 = bk[0] + bk[1];
-
-  const aiR: any[] = []
-  for (let i = 0; i < kIds.length; i += 100) {
-    const { data } = await supabase.from('rpt_keyword_ai').select('keyword_id, month, has_ai, cited, sources').in('keyword_id', kIds.slice(i, i + 100))
-    aiR.push(...(data || []))
-  }
-  const aiMonths = [...new Set(aiR.map((r) => String(r.month).slice(0, 7)))].sort()
-  const aiCur = aiMonths[aiMonths.length - 1]
-  const aiCurRows = aiR.filter((r) => String(r.month).slice(0, 7) === aiCur)
-  const aiHas = aiCurRows.filter((r) => r.has_ai).length
-  const aiCited = aiCurRows.filter((r) => r.cited).length
-  const srcCount = new Map<string, number>()
-  for (const r of aiCurRows) for (const h of r.sources || []) srcCount.set(h, (srcCount.get(h) || 0) + 1)
-  const topSrc = [...srcCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
+  const [ixCur, { rkCur, gscKMonth, effRows, bk, n3, n10 }, { aiCur, aiCurRows, aiHas, aiCited, topSrc }] = await Promise.all([
+    getIndexSnapshot(site.id), getRankSnapshot(site.id), getAiSnapshot(site.id),
+  ]);
 
   return (
     <main className="db">

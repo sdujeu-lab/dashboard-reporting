@@ -14,6 +14,9 @@ import {
   brandTermsOf,
 } from '../../../lib/data'
 import ThemeToggle from '../../../components/ThemeToggle'
+import { getSynthesis } from '../../../lib/synthesis'
+import SynthesisView from '../../../components/SynthesisView'
+import PrintButton from '../../../components/PrintButton'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
@@ -109,14 +112,16 @@ export default async function ClientReportPage({
   }
 
   const prevMonth = shiftMonth(month, 1)
-  const [summary, prev, trend, queries, pages, channels] = await Promise.all([
+  const [summary, prev, trend, queries, pages, channels, synthesis] = await Promise.all([
     getSummary(site.id, month),
     getSummary(site.id, prevMonth),
     getTrend(site.id, month),
     getQueries(site.id, month),
     getPages(site.id, month),
     getChannels(site.id, month),
+    getSynthesis(site.id, month, true),
   ])
+  const syn = synthesis?.content
 
   const clicks = Number(summary?.clicks || 0)
   const impressions = Number(summary?.impressions || 0)
@@ -136,31 +141,36 @@ export default async function ClientReportPage({
             Reporting · {monthLabel(month)}
           </p>
         </div>
-        <form method="get" className="flex items-center gap-2">
-          <label htmlFor="month" className="sr-only">
-            Mois
-          </label>
-          <select
-            id="month"
-            name="month"
-            defaultValue={month}
-            className="rounded-lg border border-slate-400 px-3 py-2"
-          >
-            {months.map((m) => (
-              <option key={m} value={m}>
-                {monthLabel(m)}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
-          >
-            Afficher
-          </button>
-          <ThemeToggle />
-        </form>
+        <div className="flex items-center gap-2">
+          <PrintButton label="Télécharger en PDF" />
+          <form method="get" className="flex items-center gap-2 print:hidden">
+            <label htmlFor="month" className="sr-only">
+              Mois
+            </label>
+            <select
+              id="month"
+              name="month"
+              defaultValue={month}
+              className="rounded-lg border border-slate-400 px-3 py-2"
+            >
+              {months.map((m) => (
+                <option key={m} value={m}>
+                  {monthLabel(m)}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+            >
+              Afficher
+            </button>
+            <ThemeToggle />
+          </form>
+        </div>
       </div>
+
+      {syn && <SynthesisView syn={syn} className={`${card} space-y-5`} />}
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className={card}>

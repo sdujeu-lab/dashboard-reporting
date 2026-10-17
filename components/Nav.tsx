@@ -12,6 +12,7 @@ const links = [
   { href: '/ia', label: 'Visibilité IA' },
   { href: '/liens', label: 'Liens' },
   { href: '/analytics', label: 'Analytics' },
+  { href: '/synthese', label: 'Synthèse client' },
   { href: '/mesurer', label: 'Mesurer les rangs' },
   { href: '/import', label: 'Import CSV' },
   { href: '/gerer', label: 'Gérer les mots-clés' },
